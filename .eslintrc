@@ -125,6 +125,7 @@ rules:
     no-restricted-syntax: 2
     no-underscore-dangle: 2
     no-unneeded-ternary: 2
+    no-trailing-spaces: 2
     one-var:
         - 2
         - never
