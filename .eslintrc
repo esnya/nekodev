@@ -83,7 +83,7 @@ rules:
     no-shadow: 2
     no-undef-init: 2
     no-unused-vars:
-        - 2
+        - 1
         - varsIgnorePattern: React
     no-use-before-define: 2
 
@@ -114,7 +114,7 @@ rules:
     max-statements: 1
     new-cap: 0
     new-parens: 2
-    newline-after-var: 2
+    newline-after-var: 0
     no-array-constructor: 2
     no-continue: 2
     no-inline-comments: 2
