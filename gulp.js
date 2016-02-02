@@ -67,7 +67,7 @@ module.exports = function(options) {
                         ? read(item).concat([ item ])
                         : [ item ]
                     )
-                    .reduce((a, b) => a.concat(b));
+                    .reduce((a, b) => a.concat(b), []);
 
             read('lib')
                 .filter((item) => !fs.existsSync(item.replace(/^lib/, 'src')))
