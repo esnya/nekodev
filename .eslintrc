@@ -133,9 +133,9 @@ rules:
     operator-assignment: 2
     operator-linebreak:
         - 2
-        - before
+        - after
         - overrides:
-            =: after
+            ?: before
     padded-blocks:
         - 2
         - never
