@@ -136,6 +136,7 @@ rules:
         - after
         - overrides:
             ?: before
+            ":": before
     padded-blocks:
         - 2
         - never
