@@ -12,6 +12,12 @@ ecmaFeatures:
     experimentalObjectRestSpread: true
 globals:
     KeyEvent: true
+    jest: true
+    describe: true
+    it: true
+    expect: true
+    beforeEach: true
+    afterEach: true
 rules:
     comma-dangle:
         - 2

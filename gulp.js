@@ -12,6 +12,8 @@ module.exports = function(options) {
     const sloc = require('gulp-sloc');
     const sourcemaps = require('gulp-sourcemaps');
     const gutil = require('gulp-util');
+    const jest = require('jest-cli');
+    const path = require('path');
     const source = require('vinyl-source-stream');
     const buffer = require('vinyl-buffer');
     const watchify = require('watchify');
@@ -25,6 +27,8 @@ module.exports = function(options) {
     gulp.task('build', ['build:server', 'build:browser']);
     gulp.task('build:server', ['babel']);
     gulp.task('build:browser', ['browserify']);
+
+    gulp.task('test', ['eslint', 'jest']);
 
     gulp.task('serve', ['server']);
 
@@ -116,6 +120,12 @@ module.exports = function(options) {
     w.on('log', gutil.log);
     gulp.task('watchify', ['babel'], bundle(w));
     gulp.task('browserify', ['babel'], bundle(browserify(BrowserifyConfig)));
+
+    gulp.task('jest', ['babel'], (next) => {
+        jest.runCLI({}, path.join(__dirname, '../lib'), (succeeded) => {
+            next(!succeeded);
+        });
+    });
 
     gulp.task('server', ['babel'], (next) => {
         server.start();
