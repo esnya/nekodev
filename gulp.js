@@ -11,6 +11,7 @@ module.exports = function(options) {
     const liveserver = require('gulp-live-server');
     const sloc = require('gulp-sloc');
     const sourcemaps = require('gulp-sourcemaps');
+    const uglify = require('gulp-uglify');
     const gutil = require('gulp-util');
     const jest = require('jest-cli');
     const path = require('path');
@@ -96,7 +97,6 @@ module.exports = function(options) {
 
     const BrowserifyConfig = {
         entries: ['lib/browser'],
-        debug: true,
     };
     const bundle = function(b) {
         return function() {
@@ -107,6 +107,8 @@ module.exports = function(options) {
                 .pipe(source('browser.js'))
                 .pipe(buffer())
                 .pipe(sourcemaps.init({loadMaps: true}))
+                .pipe(uglify())
+                .pipe(sourcemaps.write('.'))
                 .pipe(gulp.dest('dist/js'));
         };
     };
