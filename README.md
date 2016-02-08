@@ -1,2 +1,2 @@
-# beniimo-dev
-Development environment and utilities for Beniimo-TRPG.
+# Nekodev
+Development environment and utilities for NekoRPG.
