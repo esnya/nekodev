@@ -1,11 +1,13 @@
 /* eslint strict: 0 */
 /* eslint no-sync: 0 */
-module.exports = function(options) {
+module.exports = function(gulp, options) {
     'use strict';
 
+    if (!options) options = {};
+
+    const babelrc = require('./babelrc');
     const browserify = require('browserify');
     const fs = require('fs');
-    const gulp = require('gulp');
     const babel = require('gulp-babel');
     const eslint = require('gulp-eslint');
     const liveserver = require('gulp-live-server');
@@ -49,7 +51,9 @@ module.exports = function(options) {
 
     gulp.task('eslint', () =>
         gulp.src(['src/**/*.js', 'gulpfile.js'])
-            .pipe(eslint())
+            .pipe(eslint({
+                extends: path.join(__dirname, '.eslintrc'),
+            }))
             .pipe(eslint.format())
             .pipe(eslint.failAfterError())
     );
@@ -91,7 +95,15 @@ module.exports = function(options) {
     gulp.task(
         'babel', ['eslint', 'sync-lib'],
         () => gulp.src('src/**/*.js')
-            .pipe(babel())
+            .pipe(babel({
+                presets: [
+                    "react",
+                    "es2015",
+                    "stage-2"
+                ].map((a) => path.join(__dirname, `node_modules/babel-preset-${a}`)),
+                sourceMaps: "inline",
+                sourceRoot: "src"
+            }))
             .pipe(gulp.dest('lib'))
     );
 
