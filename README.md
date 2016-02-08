@@ -9,7 +9,7 @@ Development environment and utilities for NekoRPG.
 2. Run `npm install` on `postinstall`
     ```json
     "scripts": {
-        "postinstall": "cd nekodev && npm install"
+            "postinstall": "git submodule update --init nekodev && cd nekodev && npm install",
     }
     ```
 3. Call `nekodev/gulp` from `gulpfile.js`
