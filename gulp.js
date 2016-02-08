@@ -111,6 +111,13 @@ module.exports = function(gulp, options) {
         entries: ['lib/browser'],
     };
     const bundle = function(b) {
+        if (options.browser === false) {
+            return (next) => {
+                gutil.log('Skip browser');
+                next();
+            };
+        }
+
         return function() {
             return b.bundle()
                 .on('error', (e) => {
