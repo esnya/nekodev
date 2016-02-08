@@ -24,7 +24,9 @@ rules:
         - always-multiline
     no-console: 1
     no-unexpected-multiline: 2
-    valid-jsdoc: 2
+    valid-jsdoc:
+        - 2
+        - requireReturn: false
 
     consistent-return: 2
     block-scoped-var: 2
