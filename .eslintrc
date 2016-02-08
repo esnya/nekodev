@@ -137,7 +137,8 @@ rules:
     no-trailing-spaces: 2
     one-var:
         - 2
-        - never
+        - uninitialized: always
+          initialized: never
     operator-assignment: 2
     operator-linebreak:
         - 2
@@ -154,7 +155,7 @@ rules:
     require-jsdoc: 2
     semi-spacing: 2
     semi: 2
-    sort-vars: 2
+    sort-vars: 0
     space-in-parens: 2
     spaced-comment: 2
     wrap-regex: 2
