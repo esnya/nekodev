@@ -6,13 +6,19 @@ Development environment and utilities for NekoRPG.
     ```sh
     git submodule add https://github.com/ukatama/nekodev.git
     ```
-2. Run `npm install` on `postinstall`
+2. Run install as local module
+    ```sh
+    npm install --sve-dev ./nekodev
+    ```
+
+    or
+
     ```json
-    "scripts": {
-            "postinstall": "git submodule update --init nekodev && cd nekodev && npm install",
+    "devDependencies": {
+        "nekodev": "file:./nekodev"
     }
     ```
-3. Call `nekodev/gulp` from `gulpfile.js`
+3. Call `nekodev.gulp` with the `gulp` module from `gulpfile.js`
     ```js
-    require('./nekodev/gulp')(require('gulp'), options);
+    require('nekodev').gulp(require('gulp'), options);
     ```
