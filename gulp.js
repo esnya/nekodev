@@ -144,7 +144,7 @@ module.exports = function(gulp, options) {
 
     gulp.task('jest', ['babel'], (next) => {
         jest.runCLI({}, path.join(__dirname, '../lib'), (succeeded) => {
-            next(!succeeded);
+            next(!succeeded && new Error('Test failured'));
         });
     });
 
