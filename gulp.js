@@ -5,7 +5,6 @@ module.exports = function(gulp, options) {
 
     if (!options) options = {};
 
-    const babelrc = require('./babelrc');
     const browserify = require('browserify');
     const fs = require('fs');
     const babel = require('gulp-babel');
@@ -97,10 +96,10 @@ module.exports = function(gulp, options) {
         () => gulp.src('src/**/*.js')
             .pipe(babel({
                 presets: [
-                    "react",
-                    "es2015",
-                    "stage-2"
-                ].map((a) => path.join(__dirname, `node_modules/babel-preset-${a}`)),
+                    'react',
+                    'es2015',
+                    'babel-preset-stage-2',
+                ],
                 sourceMaps: "inline",
                 sourceRoot: "src"
             }))
