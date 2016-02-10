@@ -23,6 +23,32 @@ module.exports = function(options) {
 
     const server = liveserver.new('.');
 
+    const config = {};
+    config.eslint = {
+        extends: path.join(__dirname, '.eslintrc'),
+    };
+    config.babel = {
+        presets: [
+            'react',
+            'es2015',
+            'stage-2',
+        ],
+        sourceMaps: 'inline',
+        sourceRoot: 'src'
+    };
+    config.browserify = {
+        entries: ['src/browser'],
+        debug: true,
+        transform: [
+            [
+                'babelify',
+                {
+                    presets: config.babel.presets,
+                },
+            ],
+        ],
+    };
+
     gulp.task('default', ['build']);
 
     gulp.task('lint', ['eslint']);
@@ -51,9 +77,7 @@ module.exports = function(options) {
 
     gulp.task('eslint', () =>
         gulp.src(['src/**/*.js', 'gulpfile.js'])
-            .pipe(eslint({
-                extends: path.join(__dirname, '.eslintrc'),
-            }))
+            .pipe(eslint(config.eslint))
             .pipe(eslint.format())
             .pipe(eslint.failAfterError())
     );
@@ -95,21 +119,10 @@ module.exports = function(options) {
     gulp.task(
         'babel', ['eslint', 'sync-lib'],
         () => gulp.src('src/**/*.js')
-            .pipe(babel({
-                presets: [
-                    'react',
-                    'es2015',
-                    'babel-preset-stage-2',
-                ],
-                sourceMaps: "inline",
-                sourceRoot: "src"
-            }))
+            .pipe(babel(config.babel))
             .pipe(gulp.dest('lib'))
     );
 
-    const BrowserifyConfig = {
-        entries: ['lib/browser'],
-    };
     const bundle = function(b) {
         if (options.browser === false) {
             return (next) => {
@@ -134,13 +147,13 @@ module.exports = function(options) {
     const w = watchify(browserify(Object.assign(
         {},
         watchify.args,
-        BrowserifyConfig
+        config.browserify
     )));
 
     w.on('update', bundle);
     w.on('log', gutil.log);
-    gulp.task('watchify', ['babel'], bundle(w));
-    gulp.task('browserify', ['babel'], bundle(browserify(BrowserifyConfig)));
+    gulp.task('watchify', ['eslint'], bundle(w));
+    gulp.task('browserify', ['eslint'], bundle(browserify(config.browserify)));
 
     gulp.task('jest', ['babel'], (next) => {
         const ci = process.env.CI === 'true';
