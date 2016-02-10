@@ -11,6 +11,7 @@ module.exports = function(options) {
     const babel = require('gulp-babel');
     const eslint = require('gulp-eslint');
     const liveserver = require('gulp-live-server');
+    const rename = require('gulp-rename');
     const sloc = require('gulp-sloc');
     const sourcemaps = require('gulp-sourcemaps');
     const uglify = require('gulp-uglify');
@@ -55,7 +56,7 @@ module.exports = function(options) {
 
     gulp.task('build', ['build:server', 'build:browser']);
     gulp.task('build:server', ['babel']);
-    gulp.task('build:browser', ['browserify']);
+    gulp.task('build:browser', ['uglify']);
 
     gulp.task('test', ['eslint', 'jest']);
 
@@ -72,8 +73,8 @@ module.exports = function(options) {
             (file) => server.notify(file)
         );
     });
-    gulp.task('watch:browser', ['jest', 'watchify'], () =>
-        gulp.watch(['src/**/*', '!src/server/**/*', 'config/**/*'], ['jest', 'watchify']));
+    gulp.task('watch:browser', ['jest', 'wuglify'], () =>
+        gulp.watch(['src/**/*', '!src/server/**/*', 'config/**/*'], ['jest', 'wuglify']));
 
     gulp.task('eslint', () =>
         gulp.src(['src/**/*.js', 'gulpfile.js'])
@@ -139,7 +140,6 @@ module.exports = function(options) {
                 .pipe(source('browser.js'))
                 .pipe(buffer())
                 .pipe(sourcemaps.init({loadMaps: true}))
-                .pipe(uglify())
                 .pipe(sourcemaps.write('.'))
                 .pipe(gulp.dest('dist/js'));
         };
@@ -154,6 +154,28 @@ module.exports = function(options) {
     w.on('log', gutil.log);
     gulp.task('watchify', ['eslint'], bundle(w));
     gulp.task('browserify', ['eslint'], bundle(browserify(config.browserify)));
+
+    gulp.task('uglify', ['babelify'], () =>
+        gulp.src('dist/js/browser.js')
+            .pipe(rename({
+              extname: '.min.js'
+            }))
+            .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(uglify())
+            .pipe(sourcemaps.write('.'))
+            .pipe(gulp.dest('dist/js'))
+    );
+
+    gulp.task('wuglify', ['watchify'], () =>
+        gulp.src('dist/js/browser.js')
+            .pipe(rename({
+              extname: '.min.js'
+            }))
+            .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(uglify())
+            .pipe(sourcemaps.write('.'))
+            .pipe(gulp.dest('dist/js'))
+    );
 
     gulp.task('jest', ['babel'], (next) => {
         const ci = process.env.CI === 'true';
