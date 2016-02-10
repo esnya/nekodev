@@ -18,7 +18,9 @@ Development environment and utilities for NekoRPG.
         "nekodev": "file:./nekodev"
     }
     ```
-3. Call `nekodev.gulp` with the `gulp` module from `gulpfile.js`
+3. Call `nekodev.gulp` with Object of options
     ```js
-    require('nekodev').gulp(require('gulp'), options);
+    require('nekodev').gulp({
+        // Options
+    });
     ```

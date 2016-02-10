@@ -1,6 +1,6 @@
 {
   "name": "nekodev",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Development environment and utilities for NekoRPG.",
   "main": "index.js",
   "repository": {

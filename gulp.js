@@ -1,12 +1,13 @@
 /* eslint strict: 0 */
 /* eslint no-sync: 0 */
-module.exports = function(gulp, options) {
+module.exports = function(options) {
     'use strict';
 
     if (!options) options = {};
 
     const browserify = require('browserify');
     const fs = require('fs');
+    const gulp = require('gulp');
     const babel = require('gulp-babel');
     const eslint = require('gulp-eslint');
     const liveserver = require('gulp-live-server');
@@ -142,7 +143,7 @@ module.exports = function(gulp, options) {
     gulp.task('browserify', ['babel'], bundle(browserify(BrowserifyConfig)));
 
     gulp.task('jest', ['babel'], (next) => {
-        jest.runCLI({}, path.join(__dirname, '../lib'), (succeeded) => {
+        jest.runCLI({}, path.join(__dirname, '../../lib'), (succeeded) => {
             next(!succeeded && new Error('Test failured'));
         });
     });
