@@ -155,7 +155,7 @@ module.exports = function(options) {
     gulp.task('watchify', ['eslint'], bundle(w));
     gulp.task('browserify', ['eslint'], bundle(browserify(config.browserify)));
 
-    gulp.task('uglify', ['babelify'], () =>
+    gulp.task('uglify', ['browserify'], () =>
         gulp.src('dist/js/browser.js')
             .pipe(rename({
               extname: '.min.js'
