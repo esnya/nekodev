@@ -143,7 +143,11 @@ module.exports = function(options) {
     gulp.task('browserify', ['babel'], bundle(browserify(BrowserifyConfig)));
 
     gulp.task('jest', ['babel'], (next) => {
-        jest.runCLI({}, path.join(__dirname, '../../lib'), (succeeded) => {
+        const ci = process.env.CI === 'true';
+        jest.runCLI({
+            runInBand: ci,
+            verbose: ci,
+        }, path.join(__dirname, '../../lib'), (succeeded) => {
             next(!succeeded && new Error('Test failured'));
         });
     });
