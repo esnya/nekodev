@@ -28,24 +28,25 @@ const DefaultOptions = {
         default: { extends: path.join(__dirname, 'eslint/default.yml') },
         jest: { extends: path.join(__dirname, 'eslint/jest.yml') },
     },
-    babel: {
-        presets: [
-            'react',
-            'es2015',
-            'stage-2',
-        ],
-        sourceMaps: 'inline',
-        sourceRoot: 'src'
-    },
+    babel: require('./babel.json'),
     browserify: {
         entries: ['src/browser'],
         debug: true,
         transform: [
             [
                 'babelify',
-                {}
+                require('./babel.json'),
             ],
         ],
+    },
+    jest: {
+        verbose: true,
+        config: {
+            rootDir: path.join(__dirname, '../..'),
+            testPathDirs: ['lib'],
+            collectCoverage: true,
+            coverageReporters: ['text'],
+        },
     },
     src: {
         config: 'config/*.json',
@@ -108,20 +109,20 @@ function common(opts) {
             }))
     );
 
+    const read = (dir) =>
+        fs.readdirSync(dir)
+            .map((item) => `${dir}/${item}`)
+            .map((item) =>
+                fs.statSync(item).isDirectory()
+                ? read(item).concat([ item ])
+                : [ item ]
+            )
+            .reduce((a, b) => a.concat(b), []);
+
     gulp.task(
         'sync-lib',
         (next) => {
             if (!fs.existsSync('lib')) return next();
-
-            const read = (dir) =>
-                fs.readdirSync(dir)
-                    .map((item) => `${dir}/${item}`)
-                    .map((item) => 
-                        fs.statSync(item).isDirectory()
-                        ? read(item).concat([ item ])
-                        : [ item ]
-                    )
-                    .reduce((a, b) => a.concat(b), []);
 
             read('lib')
                 .filter((item) => !fs.existsSync(item.replace(/^lib/, 'src')))
@@ -145,11 +146,21 @@ function common(opts) {
     );
 
     gulp.task('jest', ['babel'], (next) => {
+        // Jest issue#433
+        const collectCoverageOnlyFrom = read('lib').reduce((result, path) => {
+            result[path] = true;
+            return result;
+        }, {});
+
         const ci = process.env.CI === 'true';
-        jest.runCLI({
+
+        jest.runCLI(_.defaultsDeep({
             runInBand: ci,
             verbose: ci,
-        }, path.join(__dirname, '../../lib'), (succeeded) => {
+            config: {
+                collectCoverageOnlyFrom: collectCoverageOnlyFrom,
+            },
+        }, opts.jest), path.join(__dirname, '../..'), (succeeded) => {
             next(!succeeded && new Error('Test failured'));
         });
     });
