@@ -24,3 +24,14 @@ Development environment and utilities for NekoRPG.
         // Options
     });
     ```
+
+## Example for `scripts` in `package.json`
+```json
+"scripts": {
+    "start": "node .",
+    "build": "gulp build",
+    "test": "gulp test",
+    "publish": "gulp build test",
+    "watch": "gulp watch"
+}
+```
