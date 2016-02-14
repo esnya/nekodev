@@ -1,15 +1,18 @@
 ---
 extends: eslint:recommended
-plugins:
-    - react
+
+parserOptions:
+    exmaVersion: 6
+    sourceType: module
+    ecmaFeatures:
+        jsx: true
+        restParams: true
+        spread: true
+        experimentalObjectRestSpread: true
 env:
     browser: true
     es6: true
     node: true
-ecmaFeatures:
-    jsx: true
-    modules: true
-    experimentalObjectRestSpread: true
 rules:
     comma-dangle:
         - 2
@@ -20,7 +23,7 @@ rules:
         - 2
         - requireReturn: false
 
-    consistent-return: 2
+    consistent-return: 0
     block-scoped-var: 2
     curly:
         - 2
@@ -38,7 +41,6 @@ rules:
     no-case-declarations: 2
     no-div-regex: 2
     no-else-return: 2
-    no-empty-label: 2
     no-eval: 1
     no-extend-native: 2
     no-extra-bind: 2
