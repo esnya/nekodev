@@ -14,6 +14,7 @@ env:
     es6: true
     node: true
 rules:
+    # Possible Errors
     comma-dangle:
         - 2
         - always-multiline
@@ -23,6 +24,8 @@ rules:
         - 2
         - requireReturn: false
 
+    # Best Practices
+    array-callback-return: 2
     consistent-return: 0
     block-scoped-var: 2
     curly:
@@ -41,10 +44,16 @@ rules:
     no-case-declarations: 2
     no-div-regex: 2
     no-else-return: 2
+    no-empty-function:
+        - 2
+        - allow:
+            - arrowFunctions
     no-eval: 1
     no-extend-native: 2
     no-extra-bind: 2
+    no-extra-label: 2
     no-floating-decimal: 2
+    no-implicit-globals: 2
     no-implied-eval: 2
     no-invalid-this: 0
     no-iterator: 2
@@ -65,6 +74,7 @@ rules:
     no-self-compare: 2
     no-sequences: 2
     no-throw-literal: 2
+    no-unmodified-loop-condition: 2
     no-unused-expressions: 2
     no-useless-call: 2
     no-useless-concat: 2
@@ -75,9 +85,11 @@ rules:
     vars-on-top: 2
     wrap-iife: 2
     yoda: 2
-    
+
+    # Strict Mode
     strict: 2
 
+    # Variables
     init-declarations: 0
     no-catch-shadow: 2
     no-label-var: 2
@@ -85,10 +97,11 @@ rules:
     no-shadow: 0
     no-undef-init: 2
     no-unused-vars:
-        - 1
+        - 0 # Want to use, but does not parses in JSX
         - varsIgnorePattern: React
     no-use-before-define: 2
 
+    # Node.js and CommonJS
     callback-return: 2
     global-require: 1
     handle-callback-err: 2
@@ -98,11 +111,13 @@ rules:
     no-process-exit: 2
     no-sync: 2
 
+    # Stylistic Issues
     brace-style: 2
     comma-style: 2
     consistent-this: 2
     jsx-quotes: 2
     key-spacing: 2
+    keyword-spacing: 2
     lines-around-comment: 2
     max-depth: 2
     max-len:
@@ -118,6 +133,9 @@ rules:
     new-cap: 0
     new-parens: 2
     newline-after-var: 0
+    newline-per-chained-call:
+        - 2
+        - ignoreChainWithDepth: 4
     no-array-constructor: 2
     no-continue: 2
     no-inline-comments: 2
@@ -126,6 +144,7 @@ rules:
     no-nested-ternary: 2
     no-new-object: 2
     no-restricted-syntax: 2
+    no-whitespace-before-property: 2
     no-underscore-dangle: 2
     no-unneeded-ternary: 2
     no-trailing-spaces: 2
@@ -150,21 +169,29 @@ rules:
     semi-spacing: 2
     semi: 2
     sort-vars: 0
+    sort-imports: 0
     space-in-parens: 2
     spaced-comment: 2
     wrap-regex: 2
 
+    # ECMAScript 6
     arrow-body-style: 2
     arrow-parens: 2
     constructor-super: 2
     no-class-assign: 2
+    no-confusing-arrow: 2
     no-const-assign: 2
     no-dupe-class-members: 2
+    no-new-symbol: 2
     no-this-before-super: 2
     no-var: 2
+    no-useless-constructor: 2
     object-shorthand: 2
     prefer-arrow-callback: 2
     prefer-const: 2
     prefer-reflect: 0
+    prefer-rest-params: 2
     prefer-spread: 2
     require-yield: 2
+    template-curly-spacing: 2
+    yield-star-spacing: 2
