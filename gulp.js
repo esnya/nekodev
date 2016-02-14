@@ -74,7 +74,7 @@ function common(opts) {
     gulp.task('build', filter(['build:server', 'build:browser', 'sloc']));
     gulp.task('test', ['eslint', 'jest', 'sloc', 'jsonlint']);
 
-    gulp.task('watch', filter(['watch:server', 'watch:browser', 'test']), () => {
+    gulp.task('watch', filter(['watch:server', 'watch:browser', 'build', 'test']), () => {
         gulp.watch([opts.src.src], ['babel']);
         gulp.watch([opts.src.src, `!${opts.src.tests}`], ['eslint:default']);
         gulp.watch([opts.src.tests, opts.src.mocks], ['eslint:jest']);
@@ -150,7 +150,7 @@ function common(opts) {
             .pipe(gulp.dest('lib'))
     );
 
-    gulp.task('jest', ['babel'], (next) => {
+    gulp.task('jest', (next) => {
         // Jest issue#433
         const collectCoverageOnlyFrom = read('src').reduce((result, path) => {
             result[path] = true;
@@ -193,7 +193,7 @@ function browser(opts) {
 
     gulp.task('build:browser', ['uglify:build']);
 
-    gulp.task('watch:browser', ['uglify:watch'], () =>
+    gulp.task('watch:browser', () =>
         gulp.watch([opts.src.src, `!${opts.src.server}`, `!${opts.src.tests}`], ['uglify:watch']));
 
     w.on('update', bundle);
