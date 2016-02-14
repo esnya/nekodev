@@ -45,7 +45,7 @@ const DefaultOptions = {
             rootDir: path.join(__dirname, '../..'),
             testPathDirs: ['lib'],
             collectCoverage: true,
-            coverageReporters: ['text'],
+            coverageReporters: ['text', 'lcov', 'clover'],
         },
     },
     src: {
@@ -142,6 +142,8 @@ function common(opts) {
         'babel', ['sync-lib'],
         () => gulp.src([opts.src.src])
             .pipe(babel(opts.babel))
+            .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('lib'))
     );
 
