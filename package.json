@@ -1,6 +1,6 @@
 {
   "name": "nekodev",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Development environment and utilities for NekoRPG.",
   "main": "index.js",
   "repository": {
@@ -13,6 +13,7 @@
   "author": "ukatama",
   "license": "MIT",
   "dependencies": {
+    "babel-core": "^6.5.2",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-2": "^6.5.0",

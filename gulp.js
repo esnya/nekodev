@@ -43,9 +43,10 @@ const DefaultOptions = {
         verbose: true,
         config: {
             rootDir: path.join(__dirname, '../..'),
-            testPathDirs: ['lib'],
+            testPathDirs: ['src'],
             collectCoverage: true,
             coverageReporters: ['text', 'lcov', 'clover'],
+            scriptPreprocessor: path.join(__dirname, 'preprocessor.js'),
         },
     },
     src: {
@@ -151,7 +152,7 @@ function common(opts) {
 
     gulp.task('jest', ['babel'], (next) => {
         // Jest issue#433
-        const collectCoverageOnlyFrom = read('lib').reduce((result, path) => {
+        const collectCoverageOnlyFrom = read('src').reduce((result, path) => {
             result[path] = true;
             return result;
         }, {});
