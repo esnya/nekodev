@@ -1,2 +1,6 @@
 ---
 extends: ./default.yml
+rules:
+    strict: 0
+    max-nested-callbacks: 0
+    global-require: 0

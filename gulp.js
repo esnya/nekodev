@@ -125,7 +125,9 @@ function common(opts) {
             if (!fs.existsSync('lib')) return next();
 
             read('lib')
-                .filter((item) => !fs.existsSync(item.replace(/^lib/, 'src')))
+                .filter((item) =>
+                    !fs.existsSync(item.replace(/^lib/, 'src').replace(/\.map$/, ''))
+                )
                 .forEach((item) => {
                     gutil.log(`rm ${item}`);
                     if (fs.statSync(item).isDirectory()) {
