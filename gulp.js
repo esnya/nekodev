@@ -40,7 +40,7 @@ const DefaultOptions = {
         ],
     },
     jest: {
-        verbose: true,
+        logHeapUsage: true,
         config: {
             rootDir: path.join(__dirname, '../..'),
             testPathDirs: ['src'],
@@ -160,7 +160,6 @@ function common(opts) {
         const ci = process.env.CI === 'true';
 
         jest.runCLI(_.defaultsDeep({
-            runInBand: ci,
             verbose: ci,
             config: {
                 collectCoverageOnlyFrom: collectCoverageOnlyFrom,
