@@ -73,7 +73,7 @@ function common(opts) {
     gulp.task('build', filter(['build:server', 'build:browser', 'sloc']));
     gulp.task('test', ['eslint', 'jest', 'sloc', 'jsonlint']);
 
-    gulp.task('watch', filter(['watch:server', 'watch:browser']), () => {
+    gulp.task('watch', filter(['watch:server', 'watch:browser', 'test']), () => {
         gulp.watch([opts.src.src], ['babel']);
         gulp.watch([opts.src.src, `!${opts.src.tests}`], ['eslint:default']);
         gulp.watch([opts.src.tests, opts.src.mocks], ['eslint:jest']);
