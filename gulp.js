@@ -152,10 +152,12 @@ function common(opts) {
 
     gulp.task('jest', (next) => {
         // Jest issue#433
-        const collectCoverageOnlyFrom = read('src').reduce((result, path) => {
-            result[path] = true;
-            return result;
-        }, {});
+        const collectCoverageOnlyFrom = read('src')
+            .filter((path) => !path.match(/__tests__|__mocks__/))
+            .reduce((result, path) => {
+                result[path] = true;
+                return result;
+            }, {});
 
         const ci = process.env.CI === 'true';
 
