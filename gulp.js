@@ -53,7 +53,7 @@ const DefaultOptions = {
         config: 'config/*.json',
         src: 'src/**/*.js',
         tests: 'src/**/__tests__/**/*.js',
-        mocks: '__mocks__/**/*.js',
+        mocks: 'src/**/__mocks__/**/*.js',
         browser: 'src/browser/**/*.js',
         server: 'src/server/**/*.js',
     },
@@ -85,13 +85,13 @@ function common(opts) {
 
     gulp.task('eslint', ['eslint:default', 'eslint:jest'])
     gulp.task('eslint:default', () =>
-        gulp.src([opts.src.src, `!${opts.src.tests}`])
+        gulp.src([opts.src.src, `!${opts.src.tests}`, `!${opts.src.mocks}`])
             .pipe(eslint(opts.eslint.default))
             .pipe(eslint.format())
             .pipe(eslint.failAfterError())
     );
     gulp.task('eslint:jest', () =>
-        gulp.src([opts.src.tests])
+        gulp.src([opts.src.tests, opts.src.mocks])
             .pipe(eslint(opts.eslint.jest))
             .pipe(eslint.format())
             .pipe(eslint.failAfterError())

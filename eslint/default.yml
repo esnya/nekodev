@@ -10,14 +10,6 @@ ecmaFeatures:
     jsx: true
     modules: true
     experimentalObjectRestSpread: true
-globals:
-    KeyEvent: true
-    jest: true
-    describe: true
-    it: true
-    expect: true
-    beforeEach: true
-    afterEach: true
 rules:
     comma-dangle:
         - 2
@@ -115,7 +107,7 @@ rules:
         - 2
         - 80
         - 4
-        - ignorePattern: "^\\s*`.*`[;,]?$"
+        - ignorePattern: "^\\s*[`'].*[`'][;,]?$"
     max-nested-callbacks: 
         - 2
         - 3

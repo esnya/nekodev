@@ -1,5 +1,7 @@
 ---
 extends: ./default.yml
+env:
+    jest: true
 rules:
     strict: 0
     max-nested-callbacks: 0
