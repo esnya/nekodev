@@ -5,3 +5,4 @@ rules:
     max-nested-callbacks: 0
     global-require: 0
     no-sync: 0
+    one-var: 0
