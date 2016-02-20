@@ -8,3 +8,5 @@ rules:
     global-require: 0
     no-sync: 0
     one-var: 0
+    prefer-const: 0
+    no-empty-pattern: 1
