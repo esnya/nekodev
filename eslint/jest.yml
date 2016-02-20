@@ -10,3 +10,5 @@ rules:
     one-var: 0
     prefer-const: 0
     no-empty-pattern: 1
+    react/prop-types: 0
+    react/jsx-sort-props: 0
