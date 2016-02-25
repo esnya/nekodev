@@ -47,6 +47,12 @@ const DefaultOptions = {
             collectCoverage: true,
             coverageReporters: ['text', 'lcov', 'clover'],
             scriptPreprocessor: path.join(__dirname, 'preprocessor.js'),
+            unmockedModulePathPatterns: [
+                '<rootDir>/node_modules/fbjs',
+                '<rootDir>/node_modules/react',
+                '<rootDir>/node_modules/react-addons-test-utils',
+                '<rootDir>/node_modules/react-dom',
+            ],
         },
     },
     src: {
