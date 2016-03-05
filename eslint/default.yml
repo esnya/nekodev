@@ -118,6 +118,7 @@ rules:
     brace-style: error
     comma-style: error
     consistent-this: error
+    eol-last: error
     jsx-quotes: error
     key-spacing: error
     keyword-spacing: error
