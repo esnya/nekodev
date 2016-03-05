@@ -1,4 +1,10 @@
 # Nekodev
+[![Build Status](https://img.shields.io/travis/ukatama/nekodev/master.svg?style=flat-square)](https://travis-ci.org/ukatama/nekodev)
+[![PeerDependencies](https://img.shields.io/david/peer/ukatama/nekodev.svg?style=flat-square)](https://david-dm.org/ukatama/nekodev#info=peerDependencies&view=list)
+[![Coverage Status](https://img.shields.io/coveralls/ukatama/nekodev.svg?style=flat-square)](https://coveralls.io/github/ukatama/nekodev)
+[![Dependencies](https://img.shields.io/david/ukatama/nekodev.svg?style=flat-square)](https://david-dm.org/ukatama/nekodev)
+[![DevDependencies](https://img.shields.io/david/dev/ukatama/nekodev.svg?style=flat-square)](https://david-dm.org/ukatama/nekodev#info=devDependencies&view=list)
+
 Development environment and utilities for NekoRPG.
 
 ## Usage
@@ -31,7 +37,6 @@ Development environment and utilities for NekoRPG.
     "start": "node .",
     "build": "gulp build",
     "test": "gulp test",
-    "publish": "gulp build test",
     "watch": "gulp watch"
 }
 ```
