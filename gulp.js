@@ -35,7 +35,7 @@ const DefaultOptions = {
         transform: [
             [
                 'babelify',
-                require('./babel.json'),
+                Object.assign({}, require('./babel.json')),
             ],
         ],
     },
