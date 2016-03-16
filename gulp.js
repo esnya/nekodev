@@ -7,6 +7,8 @@ const gulp = require('gulp');
 const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
 const liveserver = require('gulp-live-server');
+const notify = require('gulp-notify');
+const plumber = require('gulp-plumber');
 const rename = require('gulp-rename');
 const sequence = require('gulp-sequence');
 const sloc = require('gulp-sloc');
@@ -65,66 +67,125 @@ const DefaultOptions = {
     },
 };
 
-function common(opts) {
-    const filter = (deps) =>
-        deps.filter((dep) => {
-            if (dep.match(/:browser$/) && !opts.browser) return false;
-            else if (dep.match(/:server$/) && !opts.server) return false;
-            return true;
-        });
+const read = (dir) =>
+    fs.readdirSync(dir)
+        .map((item) => `${dir}/${item}`)
+        .map((item) =>
+            fs.statSync(item).isDirectory()
+            ? read(item).concat([ item ])
+            : [ item ]
+        )
+        .reduce((a, b) => a.concat(b), []);
 
-    gulp.task('default', ['build', 'test']);
+module.exports = function(opts) {
+    opts = _.defaultsDeep(opts || {}, DefaultOptions);
+    opts.browserify.transform[0][1].presets = opts.babel.presets;
 
-    gulp.task('lint', ['eslint', 'jsonlint']);
-
-    gulp.task('build', filter(['build:server', 'build:browser', 'sloc']));
-    gulp.task('test', ['eslint', 'jest', 'sloc', 'jsonlint']);
-
-    gulp.task('watch', filter(['watch:server', 'watch:browser', 'build', 'test']), () => {
-        gulp.watch([opts.src.src], ['babel']);
-        gulp.watch([opts.src.src, `!${opts.src.tests}`], ['eslint:default']);
-        gulp.watch([opts.src.tests, opts.src.mocks], ['eslint:jest']);
-        gulp.watch([opts.src.src, opts.src.mocks], ['jest']);
-        gulp.watch([opts.src.src], ['sloc']);
-        gulp.watch([opts.src.config], ['jsonlint']);
+    const src = Object.assign({}, opts.src, {
+        babel: [opts.src.src, `!${opts.src.tests}`, `!${opts.src.mocks}`],
+        browserify: [
+            opts.src.src,
+            `!${opts.src.tests}`,
+            `!${opts.src.mocks}`,
+            `!${opts.src.server}`,
+        ],
+        eslint: [opts.src.src],
+        jsonlint: [opts.src.config],
+        jest: [opts.src.src],
+        server: [
+            'config/*.*',
+            opts.src.src,
+            `!${opts.src.tests}`,
+            `!${opts.src.mocks}`,
+            `!${opts.src.browser}`,
+        ],
+        notify: ['dist/**/*', 'public/**/*', 'views/**/*'],
+        sloc: [opts.src.src],
     });
 
-    gulp.task('eslint', ['eslint:default', 'eslint:jest'])
-    gulp.task('eslint:default', () =>
-        gulp.src([opts.src.src, `!${opts.src.tests}`, `!${opts.src.mocks}`])
-            .pipe(eslint(opts.eslint.default))
-            .pipe(eslint.format())
-            .pipe(eslint.failAfterError())
-    );
-    gulp.task('eslint:jest', () =>
-        gulp.src([opts.src.tests, opts.src.mocks])
-            .pipe(eslint(opts.eslint.jest))
-            .pipe(eslint.format())
-            .pipe(eslint.failAfterError())
-    );
+    let app;
+
+    gulp.task('default', ['build', 'test', 'sloc']);
+
+    gulp.task('build', ['babel', 'browserify', 'sloc']);
+    gulp.task('test', ['lint', 'jest', 'sloc']);
+    gulp.task('lint', ['jsonlint', 'eslint', 'sloc']);
+    gulp.task('production', ['test', 'build', 'uglify']);
+    gulp.task('serve', ['server']);
+
+    gulp.task('watch', () => {
+        gulp.watch(src.babel, ['babel']);
+        gulp.watch(src.browserify, ['browserify']);
+        gulp.watch(src.eslint, ['eslint']);
+        gulp.watch(src.jsonlint, ['jsonlint']);
+        gulp.watch(src.jest, ['jest']);
+        gulp.watch(src.sloc, ['sloc']);
+
+        if (opts.server) {
+            gulp.watch(src.server, ['server']);
+            if (opts.browser) {
+                gulp.watch(src.notify, app.notify.bind(app));
+            }
+        }
+    });
 
     gulp.task('sloc', () =>
         gulp.src([opts.src.src])
             .pipe(sloc())
     );
 
+    gulp.task('eslint', ['eslint:default', 'eslint:jest'])
+    gulp.task('eslint:default', () =>
+        gulp.src([opts.src.src, `!${opts.src.tests}`, `!${opts.src.mocks}`])
+            .pipe(plumber({errorHandler: notify.onError({
+                title: 'ESLint (default) Error',
+                message: '<%= error %>',
+            })}))
+            .pipe(eslint(opts.eslint.default))
+            .pipe(eslint.format())
+            .pipe(eslint.failAfterError())
+    );
+    gulp.task('eslint:jest', () =>
+        gulp.src([opts.src.tests, opts.src.mocks])
+            .pipe(plumber({errorHandler: notify.onError({
+                title: 'ESLint (jest) Error',
+                message: '<%= error %>',
+            })}))
+            .pipe(eslint(opts.eslint.jest))
+            .pipe(eslint.format())
+            .pipe(eslint.failAfterError())
+    );
+
     gulp.task('jsonlint', () =>
         gulp.src([opts.src.config])
+            .pipe(plumber({errorHandler: notify.onError({
+                title: 'JSONLint Error',
+                message: '<%= error %>',
+            })}))
             .pipe(through.obj((file, encode, next) => {
                 jsonlint.parse(file.contents.toString(encode));
                 next();
             }))
     );
 
-    const read = (dir) =>
-        fs.readdirSync(dir)
-            .map((item) => `${dir}/${item}`)
-            .map((item) =>
-                fs.statSync(item).isDirectory()
-                ? read(item).concat([ item ])
-                : [ item ]
-            )
-            .reduce((a, b) => a.concat(b), []);
+    gulp.task('jest', (next) => {
+        const ci = process.env.CI === 'true';
+
+        jest.runCLI(
+            _.defaultsDeep({verbose: ci}, opts.jest),
+            path.join(__dirname, '../..'),
+            (succeeded) => {
+                if (succeeded) return next();
+
+                notify.onError({
+                    title: 'Jest Error',
+                    message: '<%= error %>',
+                }).call(this, new Error('Test Failed'));
+
+                return next('Test Failed');
+            }
+        );
+    });
 
     gulp.task(
         'sync-lib',
@@ -149,107 +210,80 @@ function common(opts) {
 
     gulp.task(
         'babel', ['sync-lib'],
-        () => gulp.src([opts.src.src])
+        () => gulp.src(src.babel)
+            .pipe(plumber({errorHandler: notify.onError({
+                title: 'Babel Error',
+                message: '<%= error %>',
+            })}))
             .pipe(babel(opts.babel))
             .pipe(sourcemaps.init({loadMaps: true}))
             .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest('lib'))
     );
 
-    gulp.task('jest', (next) => {
-        // Jest issue#433
-        const collectCoverageOnlyFrom = read('src')
-            .filter((path) => !path.match(/__tests__|__mocks__/))
-            .reduce((result, path) => {
-                result[path] = true;
-                return result;
-            }, {});
+    if (opts.server) {
+        app = liveserver.new('.');
 
-        const ci = process.env.CI === 'true';
-
-        jest.runCLI(_.defaultsDeep({
-            verbose: ci,
-            config: {
-                collectCoverageOnlyFrom: collectCoverageOnlyFrom,
-            },
-        }, opts.jest), path.join(__dirname, '../..'), (succeeded) => {
-            next(!succeeded && new Error('Test failured'));
+        gulp.task('server', ['babel'], (next) => {
+            try {
+                app.start.call(app);
+                next();
+            } catch (e) {
+                notify.onError({
+                    title: 'Server Error',
+                    message: '<%= error %>',
+                }).call(new Buffer([]), e);
+                next(e);
+            }
         });
-    });
-}
+    } else {
+        gulp.task('server', (next) => next());
+    }
 
-function browser(opts) {
-    function bundle(b) {
-        return () =>
+    if (opts.browser) {
+        const bundle = (b) => () =>
             b.bundle()
                 .on('error', (e) => {
-                    throw e;
+                    notify.onError({
+                        title: 'Browserify Error',
+                        message: '<%= error %>',
+                    }).call(this, e);
+                    this.emit('end');
                 })
                 .pipe(source('browser.js'))
                 .pipe(buffer())
                 .pipe(sourcemaps.init({loadMaps: true}))
                 .pipe(sourcemaps.write('.'))
                 .pipe(gulp.dest('dist/js'));
+
+        const w = watchify(browserify(Object.assign(
+            {},
+            watchify.args,
+            opts.browserify
+        )));
+
+        w.on('update', bundle);
+        w.on('log', gutil.log);
+        gulp.task('watchify', bundle(w));
+        gulp.task('browserify', bundle(browserify(opts.browserify)));
+
+        gulp.task('uglify', () =>
+            gulp.src('dist/js/browser.js')
+                .pipe(plumber({errorHandler: notify.onError({
+                    title: 'Uglify Error',
+                    message: '<%= error %>',
+                })}))
+                .pipe(rename({
+                    extname: '.min.js'
+                }))
+                .pipe(sourcemaps.init({loadMaps: true}))
+                .pipe(uglify())
+                .pipe(sourcemaps.write('.'))
+                .pipe(gulp.dest('dist/js'))
+        );
+    } else {
+        gulp.task('watchify', (next) => next());
+        gulp.task('browserify', (next) => next());
+        gulp.task('uglify', (next) => next());
     }
-
-    const w = watchify(browserify(Object.assign(
-        {},
-        watchify.args,
-        opts.browserify
-    )));
-
-    gulp.task('build:browser', ['uglify:build']);
-
-    gulp.task('watch:browser', () =>
-        gulp.watch([opts.src.src, `!${opts.src.server}`, `!${opts.src.tests}`], ['uglify:watch']));
-
-    w.on('update', bundle);
-    w.on('log', gutil.log);
-    gulp.task('watchify', bundle(w));
-    gulp.task('browserify', bundle(browserify(opts.browserify)));
-
-    gulp.task('uglify:common', () =>
-        gulp.src('dist/js/browser.js')
-            .pipe(rename({
-              extname: '.min.js'
-            }))
-            .pipe(sourcemaps.init({loadMaps: true}))
-            .pipe(uglify())
-            .pipe(sourcemaps.write('.'))
-            .pipe(gulp.dest('dist/js'))
-    );
-    gulp.task('uglify:build', (next) => sequence('browserify', 'uglify:common', next));
-    gulp.task('uglify:watch', (next) => sequence('watchify', 'uglify:common', next));
-}
-
-function server(opts) {
-    const app = liveserver.new('.');
-
-    gulp.task('serve', ['server']);
-
-    gulp.task('build:server', ['babel']);
-    gulp.task('watch:server', ['server'], () => {
-        gulp.watch(
-            [opts.src.src, opts.src.config, `!${opts.src.browser}`, `!${opts.src.tests}`,],
-            ['server']
-        );
-        gulp.watch(
-            ['dist/**/*', 'public/**/*', 'views/**/*'],
-            (file) => app.notify(file)
-        );
-    });
-
-    gulp.task('server', ['babel'], (next) => {
-        app.start();
-        next();
-    });
-}
-
-module.exports = function(opts) {
-    opts = _.defaultsDeep(opts || {}, DefaultOptions);
-    opts.browserify.transform[0][1].presets = opts.babel.presets;
-
-    common(opts);
-    if (opts.browser) browser(opts);
-    if (opts.server) server(opts);
 };
