@@ -124,7 +124,9 @@ module.exports = function(opts) {
         if (opts.server) {
             gulp.watch(src.server, ['server']);
             if (opts.browser) {
-                gulp.watch(src.notify, app.notify.bind(app));
+                gulp.watch(src.notify, (file) => {
+                    if (app.isRunning) app.notify.call(app, file);
+                });
             }
         }
     });
@@ -227,6 +229,7 @@ module.exports = function(opts) {
         gulp.task('server', ['babel'], (next) => {
             try {
                 app.start.call(app);
+                app.isRunning = true;
                 next();
             } catch (e) {
                 notify.onError({
