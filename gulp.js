@@ -274,7 +274,7 @@ module.exports = function(opts) {
         gulp.task('watchify', bundle(w));
         gulp.task('browserify', bundle(browserify(opts.browserify)));
 
-        gulp.task('uglify', () =>
+        gulp.task('uglify', ['browserify'], () =>
             gulp.src('dist/js/browser.js')
                 .pipe(plumber({errorHandler: notify.onError({
                     title: 'Uglify Error',
