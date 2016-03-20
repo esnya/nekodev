@@ -50,6 +50,7 @@ const DefaultOptions = {
             coverageReporters: ['text', 'lcov', 'clover'],
             scriptPreprocessor: path.join(__dirname, 'preprocessor.js'),
             unmockedModulePathPatterns: [
+                '<rootDir>/node_modules/any-promise',
                 '<rootDir>/node_modules/bluebird',
                 '<rootDir>/node_modules/body-parser',
                 '<rootDir>/node_modules/depd',
@@ -58,6 +59,7 @@ const DefaultOptions = {
                 '<rootDir>/node_modules/react',
                 '<rootDir>/node_modules/react-addons-test-utils',
                 '<rootDir>/node_modules/react-dom',
+                '<rootDir>/node_modules/sshpk',
             ],
         },
     },
