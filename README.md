@@ -36,7 +36,8 @@ Development environment and utilities for NekoRPG.
 "scripts": {
     "start": "node .",
     "build": "gulp build",
+    "production": "gulp production",
     "test": "gulp test",
-    "watch": "gulp watch"
+    "watch": "gulp build test serve watch"
 }
 ```
