@@ -257,11 +257,11 @@ module.exports = function(opts) {
     if (opts.browser) {
         const bundle = (b) => () =>
             b.bundle()
-                .on('error', (e) => {
+                .on('error', function () {
                     notify.onError({
                         title: 'Browserify Error',
                         message: '<%= error %>',
-                    }).call(this, e);
+                    }).apply(this, arguments);
                     this.emit('end');
                 })
                 .pipe(source('browser.js'))
