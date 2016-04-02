@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('lodash');
+const fork = require('child_process').fork;
 const browserify = require('browserify');
 const fs = require('fs');
 const gulp = require('gulp');
@@ -15,8 +15,8 @@ const sloc = require('gulp-sloc');
 const sourcemaps = require('gulp-sourcemaps');
 const uglify = require('gulp-uglify');
 const gutil = require('gulp-util');
-const jest = require('jest-cli');
 const jsonlint = require('jsonlint');
+const _ = require('lodash');
 const path = require('path');
 const through = require('through2');
 const source = require('vinyl-source-stream');
@@ -40,33 +40,6 @@ const DefaultOptions = {
                 Object.assign({}, require('./babel.json')),
             ],
         ],
-    },
-    jest: {
-        logHeapUsage: true,
-        config: {
-            rootDir: path.join(__dirname, '../..'),
-            testPathDirs: ['src'],
-            collectCoverage: true,
-            coverageReporters: ['text', 'lcov', 'clover'],
-            scriptPreprocessor: path.join(__dirname, 'preprocessor.js'),
-            unmockedModulePathPatterns: [
-                '<rootDir>/node_modules/ansi-regex',
-                '<rootDir>/node_modules/any-promise',
-                '<rootDir>/node_modules/bluebird',
-                '<rootDir>/node_modules/body-parser',
-                '<rootDir>/node_modules/bookshelf/node_modules/bluebird',
-                '<rootDir>/node_modules/bookshelf/node_modules/lodash',
-                '<rootDir>/node_modules/depd',
-                '<rootDir>/node_modules/fbjs',
-                '<rootDir>/node_modules/knex/node_modules/bluebird',
-                '<rootDir>/node_modules/knex/node_modules/lodash',
-                '<rootDir>/node_modules/lodash',
-                '<rootDir>/node_modules/react',
-                '<rootDir>/node_modules/react-addons-test-utils',
-                '<rootDir>/node_modules/react-dom',
-                '<rootDir>/node_modules/sshpk',
-            ],
-        },
     },
     src: {
         config: 'config/*.json',
@@ -182,14 +155,9 @@ module.exports = function(opts) {
     );
 
     gulp.task('jest', (next) => {
-        const ci = process.env.CI === 'true';
-
-        jest.runCLI(
-            _.defaultsDeep({verbose: ci}, opts.jest),
-            path.join(__dirname, '../..'),
-            (succeeded) => {
-                if (succeeded) return next();
-
+        const child = fork(path.join(__dirname, 'jest.js'));
+        child.on('exit', (code) => {
+            if (code) {
                 notify.onError({
                     title: 'Jest Error',
                     message: '<%= error %>',
@@ -197,7 +165,9 @@ module.exports = function(opts) {
 
                 return next('Test Failed');
             }
-        );
+
+            return next();
+        });
     });
 
     gulp.task(

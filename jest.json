@@ -1,0 +1,25 @@
+{
+    "logHeapUsage": true,
+    "config": {
+        "testPathDirs": ["src"],
+        "collectCoverage": true,
+        "coverageReporters": ["text", "lcov", "clover"],
+        "unmockedModulePathPatterns": [
+            "<rootDir>/node_modules/ansi-regex",
+            "<rootDir>/node_modules/any-promise",
+            "<rootDir>/node_modules/bluebird",
+            "<rootDir>/node_modules/body-parser",
+            "<rootDir>/node_modules/bookshelf/node_modules/bluebird",
+            "<rootDir>/node_modules/bookshelf/node_modules/lodash",
+            "<rootDir>/node_modules/depd",
+            "<rootDir>/node_modules/fbjs",
+            "<rootDir>/node_modules/knex/node_modules/bluebird",
+            "<rootDir>/node_modules/knex/node_modules/lodash",
+            "<rootDir>/node_modules/lodash",
+            "<rootDir>/node_modules/react",
+            "<rootDir>/node_modules/react-addons-test-utils",
+            "<rootDir>/node_modules/react-dom",
+            "<rootDir>/node_modules/sshpk"
+        ]
+    }
+}
