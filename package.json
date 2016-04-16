@@ -35,7 +35,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.2",
     "gulp-util": "^3.0.7",
-    "jest-cli": "^0.10.0",
+    "jest-cli": "^11.0.1",
     "jsonlint": "^1.6.2",
     "lodash": "^4.3.0",
     "vinyl-buffer": "^1.0.0",
