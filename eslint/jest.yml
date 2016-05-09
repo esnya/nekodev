@@ -13,3 +13,4 @@ rules:
     react/prop-types: 0
     react/jsx-sort-props: 0
     max-statements: 0
+    require-jsdoc: 0
