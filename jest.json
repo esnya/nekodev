@@ -4,6 +4,7 @@
         "testPathDirs": ["src"],
         "collectCoverage": true,
         "coverageReporters": ["text", "lcov", "clover"],
+        "setupTestFrameworkScriptFile": "<rootDir>/node_modules/nekodev/jest-setup.js",
         "unmockedModulePathPatterns": [
             "<rootDir>/node_modules/ansi-regex",
             "<rootDir>/node_modules/any-promise",
